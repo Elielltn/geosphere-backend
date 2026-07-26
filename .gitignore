@@ -1,0 +1,13 @@
+node_modules
+.env
+
+# build do TypeScript
+dist/
+build/
+
+# logs
+*.log
+
+# arquivos de sistema/editor
+.DS_Store
+.vscode/
