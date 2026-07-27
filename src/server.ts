@@ -22,7 +22,7 @@ app.get("/api/countries", async (req, res) => {
 
     while (more) {
       const response = await fetch(
-        `https://api.restcountries.com/countries/v5?response_fields=codes.alpha_2,names.translations.por,region,subregion,population,classification.dependency&limit=${limit}&offset=${offset}`,
+        `https://api.restcountries.com/countries/v5?response_fields=codes.alpha_2,names.translations.por,names.common,region,subregion,population,classification.dependency&limit=${limit}&offset=${offset}`,
         {
           headers: {
             Authorization: `Bearer ${process.env.RESTCOUNTRIES_TOKEN}`,
@@ -44,12 +44,28 @@ app.get("/api/countries", async (req, res) => {
 app.get("/api/countries/:code", async (req, res) => {
   try {
     const { code } = req.params;
-    const response = await fetch(
-      `https://api.restcountries.com/countries/v5?codes.alpha_2=${code}`,
-      {
-        headers: { Authorization: `Bearer ${process.env.RESTCOUNTRIES_TOKEN}` },
-      },
-    );
+    let response;
+
+    if (code.length > 2) {
+      response = await fetch(
+        `https://api.restcountries.com/countries/v5/names.common/${code}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.RESTCOUNTRIES_TOKEN}`,
+          },
+        },
+      );
+    } else {
+      response = await fetch(
+        `https://api.restcountries.com/countries/v5/codes.alpha_2/${code}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.RESTCOUNTRIES_TOKEN}`,
+          },
+        },
+      );
+    }
+
     const json = await response.json();
     res.json(json.data.objects[0]);
   } catch (error) {
